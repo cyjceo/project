@@ -1,0 +1,82 @@
+{%extends 'appname1/base_temp.html'%}
+{%block head%}
+<script type="text/javascript" src="/static/js/jquery.cookie.js"></script>
+<script>
+	$(function () {
+	    var nameok = false;
+		var passok = false;
+	    $('.name_input').blur(function () {
+	        var userinput = $('.name_input');
+			if(userinput.val().length<6 || userinput.val().length>20){
+	            userinput.next().html('请输入6-20位用户名').show();
+	            nameok = false;
+			}else{
+			    userinput.next().hide();
+			    nameok = true
+			}
+        });
+	    $('.pass_input').blur(function () {
+			var passinput = $('.pass_input');
+			if(passinput.val().length<8 || passinput.val().length>20){
+			    passinput.next().html('密码为8-20位').show();
+			    passok = false;
+			}else {
+			    passinput.next().hide();
+			    passok = true;
+			}
+        });
+
+	    $('#login').submit(function () {
+			$('.name_input').blur();
+	        $('.pass_input').blur();
+	        return nameok && passok;
+        });
+
+		if('{{name_error}}' == '1'){
+		    $('.name_input').next().html('用户名不存在').show()
+		}
+		if('{{pwd_error}}' == '1'){
+		    $('.pass_input').next().html('密码错误').show()
+		}
+    })
+</script>
+{%endblock head%}
+{%block user%}
+{%endblock user%}
+{%block content%}
+
+
+	<div class="login_top clearfix">
+		<a href="../appname2/index.html" class="login_logo"><img src="/static/images/logo02.png"></a>
+	</div>
+
+	<div class="login_form_bg">
+		<div class="login_form_wrap clearfix">
+			<div class="login_banner fl"></div>
+			<div class="slogan fl">日夜兼程 · 急速送达</div>
+			<div class="login_form fr">
+				<div class="login_title clearfix">
+					<h1>用户登录</h1>
+					<a href="/register/">立即注册</a>
+				</div>
+				<div class="form_input">
+					<form method="post" action="/login_handle/" id="login">
+						{%csrf_token%}
+						<input type="text" name="username" class="name_input" placeholder="请输入用户名" value="{{username}}">
+						<div class="user_error">输入错误</div>
+						<input type="password" name="pwd" class="pass_input" placeholder="请输入密码" value="">
+						<div class="pwd_error">输入错误</div>
+						<div class="more_input clearfix">
+							<input type="checkbox" name="jizhu" value="1">
+							<label>记住用户名</label>
+							<a href="#">忘记密码</a>
+						</div>
+						<input type="submit" name="" value="登录" class="input_submit">
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+{%endblock content%}
+
+

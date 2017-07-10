@@ -1,0 +1,162 @@
+{%extends 'appname1/base_temp.html'%}
+{%block head%}
+<script type="text/javascript">
+    $(function () {
+        {%comment%}
+        $(".add_jump").css({'left':$add_y+80,'top':$add_x+10,'display':'block'});
+        {%endcomment%}
+	    $('#add_cart').click(function(){
+            var $add_x = $('#add_cart').offset().top;
+            var $add_y = $('#add_cart').offset().left;
+
+            var $to_x = $('#show_count').offset().top;
+            var $to_y = $('#show_count').offset().left;
+            $(".add_jump").stop().animate({
+                'left': $to_y+7,
+                'top': $to_x+7},
+                "fast", function() {
+                    $(".add_jump").fadeOut('fast',function(){
+                        $('#show_count').html(2);
+                    });
+            });
+        });
+
+        $('.num_show').blur(function () {
+            var con = parseInt($('.num_show').val());
+            var kucun = parseInt($('.kucun').val());
+            if(con < 1){
+                con = 1;
+            }
+            if(con > kucun){
+                con = kucun;
+            }
+            if(isNaN(con)){
+                con = 1;
+            }
+            $(this).val(con);
+            var price = parseFloat($('.show_pirze em').text())
+            totle = price * con
+            $('.total em').text(totle.toFixed(2)+'元');
+
+        });
+        $('.add').click(function () {
+            var con = parseInt($('.num_show').val());
+            con++;
+            $('.num_show').val(con);
+            $('.num_show').blur();
+
+        });
+        $('.minus').click(function () {
+            var con = parseInt($('.num_show').val());
+            con--;
+            $('.num_show').val(con);
+            $('.num_show').blur();
+        });
+    });
+</script>
+
+{%endblock head%}
+{%block user%}
+{%endblock user%}
+{%block content%}
+
+
+	<div class="navbar_con">
+		<div class="navbar clearfix">
+			<div class="subnav_con fl">
+				<h1>全部商品分类</h1>	
+				<span></span>			
+				<ul class="subnav">
+					<li><a href="/" class="fruit">新鲜水果</a></li>
+					<li><a href="/" class="seafood">海鲜水产</a></li>
+					<li><a href="/" class="meet">猪牛羊肉</a></li>
+					<li><a href="/" class="egg">禽类蛋品</a></li>
+					<li><a href="/" class="vegetables">新鲜蔬菜</a></li>
+					<li><a href="/" class="ice">速冻食品</a></li>
+				</ul>
+			</div>
+			<ul class="navlist fl">
+				<li><a href="/">首页</a></li>
+				<li class="interval">|</li>
+				<li><a href="">手机生鲜</a></li>
+				<li class="interval">|</li>
+				<li><a href="">抽奖</a></li>
+			</ul>
+		</div>
+	</div>
+
+	<div class="breadcrumb">
+		<a href="#">全部分类</a>
+		<span>></span>
+		<a href="#">新鲜水果</a>
+		<span>></span>
+		<a href="#">商品详情</a>
+	</div>
+
+	<div class="goods_detail_con clearfix">
+		<div class="goods_detail_pic fl"><img src="/static/{{good.gpic}}"></div>
+
+		<div class="goods_detail_list fr">
+			<h3>{{good.gtitle}}</h3>
+			<p>{{good.gsubtitle}}</p>
+			<div class="prize_bar">
+				<span class="show_pirze">¥<em>{{good.gprice}}</em></span>
+				<span class="show_unit">单  位：500g</span>
+			</div>
+			<div class="goods_num clearfix">
+				<div class="num_name fl">数 量：</div>
+				<div class="num_add fl">
+					<input type="text" class="num_show fl" value="1">
+                    <input type="hidden" class="kucun" value="{{good.gunit}}">
+					<a href="javascript:;" class="add fr">+</a>
+					<a href="javascript:;" class="minus fr">-</a>	
+				</div> 
+			</div>
+			<div class="total">总价：<em>{{good.gprice}}元</em></div>
+			<div class="operate_btn">
+				<a href="javascript:;" class="buy_btn">立即购买</a>
+				<a href="javascript:;" class="add_cart" id="add_cart">加入购物车</a>				
+			</div>
+		</div>
+	</div>
+
+	<div class="main_wrap clearfix">
+		<div class="l_wrap fl clearfix">
+			<div class="new_goods">
+				<h3>新品推荐</h3>
+				<ul>
+					<li>
+						<a href="#"><img src="/static/{{recommendgoods.0.gpic}}"></a>
+						<h4><a href="#">{{recommendgoods.0.gtitle}}</a></h4>
+						<div class="prize">￥{{recommendgoods.0.gprice}}</div>
+					</li>
+					<li>
+						<a href="#"><img src="/static/{{recommendgoods.1.gpic}}"></a>
+						<h4><a href="#">{{recommendgoods.1.gtitle}}</a></h4>
+						<div class="prize">￥{{recommendgoods.1.gprice}}</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+		<div class="r_wrap fr clearfix">
+			<ul class="detail_tab clearfix">
+				<li class="active">商品介绍</li>
+				<li>评论</li>
+			</ul>
+
+			<div class="tab_content">
+				<dl>
+					<dt>商品详情：</dt>
+					<dd>
+						{%autoescape off%}
+						{{good.gcontent}}
+						{%endautoescape%}
+					</dd>
+				</dl>
+			</div>
+
+		</div>
+	</div>
+	<div class="add_jump"></div>
+{%endblock content%}
