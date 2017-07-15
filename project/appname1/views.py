@@ -4,6 +4,9 @@ from django.shortcuts import render,redirect
 from hashlib import sha1
 from models import *
 from Is_Login import isLogin
+from appname2.models import GoodsInfo
+from appname4.models import orderMain,orderDetail
+from django.core.paginator import Paginator
 # Create your views here.
 def login(request):
     name = request.COOKIES.get('username','')
@@ -74,15 +77,36 @@ def index(request):
 @isLogin
 def user_center_info(request):
     user = UserInfo.objects.get(id=request.session['uid'])
-    return render(request,'appname1/user_center_info.html',{'user':user,'title':'用户中心','top':'1'})
+    recentlystr = request.COOKIES.get('recently','')
+    list = []
+    recentlylist = recentlystr.split(',')
+    recentlylist.pop()
+    for i in recentlylist:
+        good = GoodsInfo.objects.get(id=i)
+        list.append(good)
+    return render(request,'appname1/user_center_info.html',{'user':user,'title':'用户中心','top':'1','list':list})
 @isLogin
 def user_center_site(request):
     user = UserInfo.objects.get(id=request.session['uid'])
     return render(request,'appname1/user_center_site.html',{'user': user,'title':'收货地址','top':'1'})
 @isLogin
 def user_center_order(request):
-    user = UserInfo.objects.get(id=request.session['uid'])
-    return render(request,'appname1/user_center_order.html',{'user': user,'title':'全部订单','top':'1'})
+    index = request.GET.get('index',1)
+    print index
+    order = orderMain.objects.filter(user_id=request.session['uid']).order_by('-order_date')
+    paginator = Paginator(order,5)
+    page = paginator.page(index)
+    pagenum = []
+    if page.paginator.num_pages<5:
+        pagenum = range(1,page.paginator.num_pages+1)
+    elif page.number <=2:
+        pagenum = range(1,6)
+    elif page.number>=page.paginator.num_pages-1:
+        pagenum = range(page.paginator.num_pages-4,page.paginator.num_pages+1)
+    else:
+        pagenum = range(page.number-2,page.number+3)
+
+    return render(request,'appname1/user_center_order.html',{'title':'全部订单','top':'1','page':page,'pagenum':pagenum})
 @isLogin
 def userinfo_handle(request):
     post = request.POST
@@ -97,3 +121,9 @@ def userinfo_handle(request):
 def exit(request):
     request.session.flush()
     return redirect('/')
+
+def isLogin(reuqest):
+    if reuqest.session.has_key('uid'):
+        return JsonResponse({'islogin':'1'})
+    else:
+        return JsonResponse({'islogin':'0'})
