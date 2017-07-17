@@ -2,11 +2,30 @@
 {%block head%}
 <script type="text/javascript" src="/static/js/jquery-ui.min.js"></script>
 <script type="text/javascript" src="/static/js/slide.js"></script>
+{%comment%}
+<script>
+    $(function () {
+        $.get('/islogin/',function (data) {
+            if(data.islogin == '1'){
+                $.get('/count/',function (data) {
+                    $('#show_count').text(data.count);
+                })
+            }else {
+                $('#show_count').text(0);
+            }
+        })
+    })
+</script>
+{%endcomment%}
+<script>
+    $(function () {
+
+    })_
+</script>
 {%endblock head%}
 {%block user%}
 {%endblock user%}
 {%block content%}
-
 
 <div class="navbar_con">
     <div class="navbar">
@@ -69,7 +88,7 @@
             {%endcomment%}
 
         </div>
-        <a href="/list{{c.c.id}}_/" class="goods_more fr" id="fruit_more">查看更多 ></a>
+        <a href="/list{{c.c.id}}_1_1/" class="goods_more fr" id="fruit_more">查看更多 ></a>
     </div>
 
     <div class="goods_con clearfix">

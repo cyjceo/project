@@ -1,0 +1,134 @@
+{%extends 'appname1/base_temp.html'%}
+
+{%block head%}
+<script>
+	$(function () {
+	    function cal() {
+	        var totle_all = 0;
+	        var totle_num = 0;
+	        var select_num = 0;
+			$('.cart_list_td').each(function () {
+				var price = parseFloat($(this).children('.col05').text());
+				var num = parseInt($(this).find('.num_show').val())
+				var totle = price * num;
+				$(this).children('.col07').text(totle.toFixed(2));
+				if($(this).find(':checkbox').prop('checked')){
+				    totle_all+=totle;
+				    select_num+=num;
+				}else {
+
+				}
+				totle_num+=num;
+				$('.total_count em').text(totle_num);
+				$('.col03 b').text(select_num);
+				$('.settlements em').text(totle_all.toFixed(2));
+    		})
+        }
+
+	    $('.total_count em').text($('.cart_list_td').length);
+		cal();
+	    $('#check_all').click(function () {
+			$(':checkbox:not(#check_all)').prop('checked',$(this).prop('checked'));
+			cal();
+        });
+	    $(":checkbox:not(#check_all)").click(function () {
+			if($(':checkbox:not(#check_all)').length == $(':checked:not(#check_all)').length){
+			    $('#check_all').prop('checked',true);
+			}else {
+			    $('#check_all').prop('checked',false);
+			}
+			cal();
+        });
+	    $('.num_show').blur(function () {
+			var num = parseInt($(this).val());
+			if(isNaN(num)){
+			    num = 1;
+			}
+			if(num < 1){
+			    num = 1;
+			}
+			if(num > parseInt($('.kucun').val())){
+			    num = parseInt($('.kucun').val());
+			}
+			$(this).val(num);
+			gid = $(this).parents('ul').prop('id');
+			$.get('/edit/',{'gid':gid,'count':num},function (data) {
+				if(data.ok){
+				    cal();
+				}
+            })
+        });
+	    $('.add').click(function () {
+			var num = parseInt($(this).next().val());
+			num ++;
+
+			$(this).next().val(num);
+			$(this).next().blur();
+        });
+	    $('.minus').click(function () {
+			var num = parseInt($(this).prev().prev().val());
+			num --;
+			$(this).prev().prev().val(num);
+			$(this).prev().prev().blur();
+        });
+
+    })
+	function del(id) {
+		if(confirm('是否确定删除')){
+		    $.get('/del/',{'gid':id},function (data) {
+				if(data.ok == 1){
+				    $('#'+id).remove();
+				}
+            })
+		}
+    }
+</script>
+{%endblock head%}
+
+{%block user%}
+{{block.super}}
+{%endblock user%}
+{%block content%}
+
+	<div class="total_count">全部商品<em>2</em>件</div>	
+	<ul class="cart_list_th clearfix">
+		<li class="col01">商品名称</li>
+		<li class="col02">商品单位</li>
+		<li class="col03">商品价格</li>
+		<li class="col04">数量</li>
+		<li class="col05">小计</li>
+		<li class="col06">操作</li>
+	</ul>
+<form action="/place_order/" method="post">
+	{%csrf_token%}
+{%for cart in carts%}
+	<ul class="cart_list_td clearfix" id="{{cart.goods.id}}">
+		<li class="col01"><input type="checkbox" name="cartid" value="{{cart.id}}" checked></li>
+		<li class="col02"><img src="/static/{{cart.goods.gpic}}"></li>
+		<li class="col03">{{cart.goods.gtitle}}<br><em>{{cart.goods.gprice}}元/{{cart.goods.gunit}}</em></li>
+		<li class="col04">{{cart.goods.gunit}}</li>
+		<li class="col05">{{cart.goods.gprice}}元</li>
+		<li class="col06">
+			<div class="num_add">
+				<a href="javascript:;" class="add fl">+</a>
+				<input type="text" class="num_show fl" name="count" value="{{cart.count}}">
+				<input type="hidden" class="kucun" value="{{cart.goods.gkucun}}">
+				<a href="javascript:;" class="minus fl">-</a>	
+			</div>
+		</li>
+		<li class="col07">25.80元</li>
+		<li class="col08"><a href="javascript:del({{cart.goods.id}})">删除</a></li>
+	</ul>
+{%endfor%}
+
+	
+
+	<ul class="settlements">
+		<li class="col01"><input type="checkbox" name="" checked="" id="check_all"></li>
+		<li class="col02">全选</li>
+		<li class="col03">合计(不含运费)：<span>¥</span><em>42.60</em><br>共计<b>2</b>件商品</li>
+		<li class="col04"><input type="submit" value="结算"></li>
+	</ul>
+</form>
+{%endblock content%}
+	

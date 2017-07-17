@@ -1,3 +1,4 @@
+#coding=utf-8
 """
 Django settings for project project.
 
@@ -39,7 +40,10 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'appname1',
     'appname2',
+    'appname3',
+    'appname4',
     'tinymce',
+    'haystack',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -118,6 +122,7 @@ TINYMCE_DEFAULT_CONFIG = {
     'width': 600,
     'height': 400,
 }
+
 #memcached -d -m 64 -u www -l 127.0.0.1 -p 11211 -c 1024 -P /tmp/memcached.pid
 
 CACHES={
@@ -132,3 +137,15 @@ CACHES={
 
 }
 
+
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        #使用whoosh引擎
+        'ENGINE': 'haystack.backends.whoosh_cn_backend.WhooshEngine',
+        #索引文件路径
+        'PATH': os.path.join(BASE_DIR, 'whoosh_index'),
+    }
+}
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+HAYSTACK_SEARCH_RESULTS_PER_PAGE = 1

@@ -20,5 +20,6 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^', include('appname2.urls')),
     url(r'^', include('appname1.urls')),
-
+    url(r'^', include('appname3.urls')),
+    url(r'^', include('appname4.urls')),
 ]

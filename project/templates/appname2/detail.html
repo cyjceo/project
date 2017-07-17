@@ -1,24 +1,40 @@
 {%extends 'appname1/base_temp.html'%}
 {%block head%}
-<script type="text/javascript">
+<script>
     $(function () {
         {%comment%}
         $(".add_jump").css({'left':$add_y+80,'top':$add_x+10,'display':'block'});
         {%endcomment%}
-	    $('#add_cart').click(function(){
-            var $add_x = $('#add_cart').offset().top;
-            var $add_y = $('#add_cart').offset().left;
+        $('#add_cart').click(function () {
+			$.get('/islogin/',function (data) {
+				if(data.islogin == '1'){
+				    var gid = $('.gid').val();
+				    var count = $('.num_show').val();
 
-            var $to_x = $('#show_count').offset().top;
-            var $to_y = $('#show_count').offset().left;
-            $(".add_jump").stop().animate({
-                'left': $to_y+7,
-                'top': $to_x+7},
-                "fast", function() {
-                    $(".add_jump").fadeOut('fast',function(){
-                        $('#show_count').html(2);
-                    });
-            });
+				    $.get('/addcart/',{'gid':gid,'count':count},function (data) {
+						if(data.issuccess == '1'){
+
+						    var $add_x = $('#add_cart').offset().top;
+							var $add_y = $('#add_cart').offset().left;
+
+							var $to_x = $('#show_count').offset().top;
+							var $to_y = $('#show_count').offset().left;
+
+							$(".add_jump").css({'left': $add_y + 80, 'top': $add_x + 10, 'display': 'block'})
+								.stop()
+								.animate({'left': $to_y + 7, 'top': $to_x + 7}, "fast", function () {
+									$(".add_jump").fadeOut('fast', function () {
+									   refresh();
+									});
+								});
+						} else {
+						    alert('添加失败');
+						}
+                    })
+				} else {
+				    location.href = '/login/'
+				}
+            })
         });
 
         $('.num_show').blur(function () {
@@ -35,10 +51,10 @@
             }
             $(this).val(con);
             var price = parseFloat($('.show_pirze em').text())
-            totle = price * con
+            totle = price * con;
             $('.total em').text(totle.toFixed(2)+'元');
-
         });
+
         $('.add').click(function () {
             var con = parseInt($('.num_show').val());
             con++;
@@ -52,6 +68,22 @@
             $('.num_show').val(con);
             $('.num_show').blur();
         });
+
+        $('#add_cart').click(function(){
+            var $add_x = $('#add_cart').offset().top;
+            var $add_y = $('#add_cart').offset().left;
+
+            var $to_x = $('#show_count').offset().top;
+            var $to_y = $('#show_count').offset().left;
+            $(".add_jump").stop().animate({
+                'left': $to_y+7,
+                'top': $to_x+7},
+                "fast", function() {
+                    $(".add_jump").fadeOut('fast',function(){
+
+                    });
+            });
+        });
     });
 </script>
 
@@ -59,8 +91,6 @@
 {%block user%}
 {%endblock user%}
 {%block content%}
-
-
 	<div class="navbar_con">
 		<div class="navbar clearfix">
 			<div class="subnav_con fl">
@@ -106,6 +136,7 @@
 			<div class="goods_num clearfix">
 				<div class="num_name fl">数 量：</div>
 				<div class="num_add fl">
+					<input type="hidden" class="gid" value="{{good.id}}">
 					<input type="text" class="num_show fl" value="1">
                     <input type="hidden" class="kucun" value="{{good.gunit}}">
 					<a href="javascript:;" class="add fr">+</a>
