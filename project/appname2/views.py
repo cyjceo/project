@@ -3,10 +3,13 @@ from django.shortcuts import render
 from django.db.models import Q
 from .models import *
 from django.core.paginator import Paginator
+from django.views.decorators.cache import cache_page
 # Create your views here.
+@cache_page(60,cache='file_cache')
 def index(request):
     cList = TypeInfo.objects.all()
     list = []
+    print '**************没有缓存*******************'
     for c in cList:
         list1 = c.goodsinfo_set.order_by('-gclick')[0:4]
         list2 = c.goodsinfo_set.order_by('-id')[0:4]

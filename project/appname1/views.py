@@ -4,6 +4,7 @@ from django.shortcuts import render,redirect
 from hashlib import sha1
 from models import *
 from Is_Login import isLogin
+
 # Create your views here.
 def login(request):
     name = request.COOKIES.get('username','')

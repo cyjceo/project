@@ -118,3 +118,17 @@ TINYMCE_DEFAULT_CONFIG = {
     'width': 600,
     'height': 400,
 }
+#memcached -d -m 64 -u www -l 127.0.0.1 -p 11211 -c 1024 -P /tmp/memcached.pid
+
+CACHES={
+    'default':{
+        'BACKEND':'django.core.cache.backends.memcached.PyLibMCCache',
+        'LOCATION': '127.0.0.1:11211',
+    },
+    'file_cache':{
+        'BACKEND':'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION':os.path.join(BASE_DIR,'cache'),
+    },
+
+}
+
